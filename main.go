@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 )
 
@@ -23,6 +24,14 @@ func logger(next http.Handler) http.Handler {
 }
 
 func main() {
+	logfile, err := os.OpenFile("server.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("Failed to open log file: %v", err)
+	}
+	defer logfile.Close()
+
+	log.SetOutput(logfile)
+
 	jobs := make(chan string)
 	results := make(chan string)
 
